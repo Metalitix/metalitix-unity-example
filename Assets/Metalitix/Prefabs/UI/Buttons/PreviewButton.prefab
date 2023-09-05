@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 3949110651742083778}
   - component: {fileID: 3995955870720677537}
   - component: {fileID: 3705625766805478578}
-  - component: {fileID: 9178119636444346764}
   - component: {fileID: 6302659053010491286}
+  - component: {fileID: 5626977664228991097}
   m_Layer: 8
   m_Name: PreviewButton
   m_TagString: Untagged
@@ -123,20 +123,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9178119636444346764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708614961101909222}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 946d298ee8bf4f53bf9e2aa0c7be21f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentCanvasGroups: []
-  button: {fileID: 3705625766805478578}
 --- !u!65 &6302659053010491286
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -150,3 +136,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 50, y: 50, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5626977664228991097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708614961101909222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1976864649, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentCanvasGroups: []
+  button: {fileID: 3705625766805478578}

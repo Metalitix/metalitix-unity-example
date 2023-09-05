@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4320802887369967533}
   - component: {fileID: 4320802887369967532}
   - component: {fileID: -296856171110922753}
-  - component: {fileID: 8739051601786605994}
+  - component: {fileID: 1843952817611129751}
   m_Layer: 9
   m_Name: PathPoint
   m_TagString: Untagged
@@ -98,7 +98,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8739051601786605994
+--- !u!114 &1843952817611129751
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4320802887369967531}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff720f193dc4e37bd0f9c3dd87a2301, type: 3}
+  m_Script: {fileID: -516593513, guid: 7f105f94992c6ce47ae6040979aebe54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   renderer: {fileID: 4320802887369967532}
