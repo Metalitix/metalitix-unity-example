@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5586e1a6c3e474199da1fb170f8eaed, type: 3}
+  m_Script: {fileID: 659085262, guid: 0ef0958752c27354d9c55a62f8292294, type: 3}
   m_Name: DashboardSettings
   m_EditorClassIdentifier: 
   login: 
   password: 
   token: 
-  authRole: 0
-  projectRole: 0
-  workspaceRole: 0
+  authRole: 3
+  projectRole: 3
+  workspaceRole: 3

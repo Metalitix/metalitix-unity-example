@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8048439587400218600}
-  - component: {fileID: 8048439587400218601}
+  - component: {fileID: 602530616463040628}
   m_Layer: 0
   m_Name: Wrapper
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 8048439589154581110}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8048439587400218601
+--- !u!114 &602530616463040628
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8048439587400218598}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71d9f1fd38724a94b94358109391b651, type: 3}
+  m_Script: {fileID: -1301576429, guid: 7f105f94992c6ce47ae6040979aebe54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   standardHeatMapMaterial: {fileID: 2100000, guid: 0467864e53081314097abf1a18112cc5,
@@ -86,7 +86,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8048439589154581110}
-  - component: {fileID: 7551775844208369801}
+  - component: {fileID: 3406153489617650819}
   m_Layer: 0
   m_Name: MetalitixVisualizer
   m_TagString: Untagged
@@ -111,7 +111,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7551775844208369801
+--- !u!114 &3406153489617650819
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8048439589154581111}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8127949a08424b4282277c28fc0b9a9b, type: 3}
+  m_Script: {fileID: 1738845894, guid: 7f105f94992c6ce47ae6040979aebe54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualWrapper: {fileID: 8048439587400218601}
+  visualWrapper: {fileID: 602530616463040628}
