@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638295246920350993
-    m_Hash: 319705959
+      ticks: 638295256476934254
+    m_Hash: 2715144582
   m_LockFileStatus:
     m_FilePath: D:/Projects/metalitix-unity-example/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638295246920376019
-    m_Hash: 3193749389
+      ticks: 638295256476934254
+    m_Hash: 291938110
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
@@ -113,6 +113,7 @@ m_ResolvedPackages:
     - 2.1.0-preview.3
     - 2.1.0-preview.5
     - 2.1.0-preview.6
+    - 2.1.0
     compatible:
     - 1.17.6
     - 1.17.7
@@ -132,6 +133,7 @@ m_ResolvedPackages:
     - 2.1.0-preview.3
     - 2.1.0-preview.5
     - 2.1.0-preview.6
+    - 2.1.0
     verified: 1.17.7
   dependencies:
   - name: com.unity.services.core
@@ -327,6 +329,7 @@ m_ResolvedPackages:
     - 3.0.21
     - 3.0.22
     - 3.0.24
+    - 3.0.25
     compatible:
     - 3.0.16
     - 3.0.17
@@ -335,7 +338,8 @@ m_ResolvedPackages:
     - 3.0.21
     - 3.0.22
     - 3.0.24
-    verified: 3.0.24
+    - 3.0.25
+    verified: 3.0.25
   dependencies:
   - name: com.unity.ext.nunit
     version: 1.0.6
@@ -408,12 +412,14 @@ m_ResolvedPackages:
     - 2.0.17
     - 2.0.18
     - 2.0.20
+    - 2.0.21
     compatible:
     - 2.0.16
     - 2.0.17
     - 2.0.18
     - 2.0.20
-    verified: 2.0.20
+    - 2.0.21
+    verified: 2.0.21
   dependencies:
   - name: com.unity.test-framework
     version: 1.1.9
