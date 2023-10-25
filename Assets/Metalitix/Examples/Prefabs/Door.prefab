@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 3720927835400814894}
   - component: {fileID: 3720927835400814881}
   - component: {fileID: 3720927835400814890}
-  - component: {fileID: 1275875508}
+  - component: {fileID: 5652817009155625433}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -196,7 +196,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1275875508
+--- !u!114 &5652817009155625433
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,7 +205,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4100725967622609818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 558927537, guid: 7f105f94992c6ce47ae6040979aebe54, type: 3}
+  m_Script: {fileID: -1381416181, guid: 430385ed72fd94c40bef2963b4208506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &9120313601143899044

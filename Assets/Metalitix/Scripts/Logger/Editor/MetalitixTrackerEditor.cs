@@ -95,7 +95,8 @@ namespace Metalitix.Scripts.Logger.Editor
 
         private void InitializePreviewScene()
         {
-            _previewRenderer = new ScenePreviewRenderer(100, new Color(0.22f,0.22f,0.22f), position.width, position.height);
+            var editorSettings = MetalitixStartUpHandler.EditorSettings;
+            _previewRenderer = new ScenePreviewRenderer(100, editorSettings.SurveyPreviewBackgroundColor, editorSettings.GraphicsFormatForScenePreview, position.width, position.height);
             var canvas = _previewRenderer.SpawnGameObject("Canvas", 
                 typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvasComponent =  canvas.GetComponent<Canvas>();

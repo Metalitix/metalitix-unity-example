@@ -33,12 +33,6 @@ namespace Metalitix.Scripts.Logger.Core.Base
         public override async Task<string> InitializeSession()
         {
             _kinesisResponseData = await CreateClientSession();
-
-            if (_kinesisResponseData == null)
-            {
-                throw new Exception(MetalitixRuntimeLogs.SessionInitializationError);
-            }
-            
             return _kinesisResponseData.sessionId;
         }
 
@@ -55,10 +49,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
             var data = await Task.Run(() => 
                 WebRequestHelper.PostDataWithPlayLoad<KinesisResponseData>(url.ToString(), json, new CancellationToken()));
-
+          
             if (String.IsNullOrEmpty(data.sessionId))
             {
-                MetalitixDebug.LogError(this, MetalitixRuntimeLogs.ProjectNotFound);
                 return null;
             }
             

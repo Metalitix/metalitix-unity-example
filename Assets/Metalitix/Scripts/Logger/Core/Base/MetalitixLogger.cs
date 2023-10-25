@@ -84,10 +84,10 @@ namespace Metalitix.Scripts.Logger.Core.Base
             if (_currentPopUp)
                 _currentPopUp.SwitchTheme(SurveySettings.CurrentTheme);
             else
-                MetalitixDebug.LogError(this, MetalitixRuntimeLogs.SurveyPopUpNotFound);
+                MetalitixDebug.LogError(this, MetalitixRuntimeLogs.CheckSurveyInTheScene);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             EndSession();
         }
@@ -100,7 +100,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var trackingEntity = FindObjectsOfType<TrackingEntity>();
 
             if (trackingEntity.Length < 1)
-                MetalitixDebug.LogError(this,MetalitixRuntimeLogs.NoTrackingEntityFound);
+                MetalitixDebug.LogError(this,MetalitixRuntimeLogs.PleaseAttachTrackingEntity);
             else
             {
                 TrackingEntity = trackingEntity.First();
@@ -412,7 +412,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         
         private bool CheckForSurvey()
         {
-            if (TrackingEntity == null)
+            if (_currentPopUp == null)
             {
                 MetalitixDebug.LogError(this, MetalitixRuntimeLogs.CheckSurveyInTheScene);
                 return false;

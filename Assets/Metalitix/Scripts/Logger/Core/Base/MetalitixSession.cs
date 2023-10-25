@@ -9,6 +9,7 @@ using Metalitix.Core.Settings;
 using Metalitix.Core.Tools;
 using Metalitix.Scripts.Logger.Core.Tools;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Metalitix.Scripts.Logger.Core.Base
 {
@@ -72,8 +73,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             catch (Exception e) 
             {
                 OnError?.Invoke();
-                MetalitixDebug.LogError(this, e.Message);
-                throw;
+                return;
             }
             
             InitializeTimer();
@@ -289,7 +289,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             record.SetUserEvent(metalitixUserEvent);
             ManualSend(record);
             
-            MetalitixDebug.Log(this,MetalitixRuntimeLogs.EventWasLogged + " " + metalitixUserEvent.eventName);
+            MetalitixDebug.Log(this,MetalitixRuntimeLogs.EventWasLogged + metalitixUserEvent.eventName);
         }
         
         private bool CheckIsRunning()

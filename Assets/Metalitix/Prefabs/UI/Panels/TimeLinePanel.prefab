@@ -176,11 +176,14 @@ MonoBehaviour:
   playbackToggle: {fileID: 4529861343029032403}
   playbackSpeedButton: {fileID: 8636179061195196794}
   cameraModeButton: {fileID: 2705338785648442822}
+  containerForPauses: {fileID: 4432128719178856256}
   currentTime: {fileID: 9152867406199586968}
   endTime: {fileID: 9152867406270781908}
   playbackPanel: {fileID: 0}
   cameraModePanel: {fileID: 0}
   eventButton: {fileID: 7343934949333464334, guid: e2540f3a0d910e04fbfc81653bc9e83a,
+    type: 3}
+  pauseAreaPrefab: {fileID: 4886776494732928710, guid: 72dd30e113dcfc5419003dcf0a74aab8,
     type: 3}
 --- !u!1 &9152867406199586970
 GameObject:
@@ -660,46 +663,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9152867405528627054}
     m_Modifications:
-    - target: {fileID: 1351468895530099445, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: container
-      value: 
-      objectReference: {fileID: 8663824703748638009}
-    - target: {fileID: 1351468895530099445, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: endPositionX
-      value: 1480
-      objectReference: {fileID: 0}
-    - target: {fileID: 1351468895530099445, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: parentCanvasGroup
-      value: 
-      objectReference: {fileID: 9152867405528627045}
-    - target: {fileID: 5836522723099103412, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: leftX
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 5836522723099103412, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: rightX
-      value: 1490
-      objectReference: {fileID: 0}
-    - target: {fileID: 5836522723099103412, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: endPositionX
-      value: 750
-      objectReference: {fileID: 0}
-    - target: {fileID: 5836522723099103412, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: startPositionX
-      value: -750
-      objectReference: {fileID: 0}
-    - target: {fileID: 6057082470422706449, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -4.999878
-      objectReference: {fileID: 0}
     - target: {fileID: 6057082470650332473, guid: 218b9f94a0bef134d96985ce58adc3db,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -820,32 +783,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PreviewSliderWithContainer
       objectReference: {fileID: 0}
-    - target: {fileID: 6057082470800188646, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -20
-      objectReference: {fileID: 0}
-    - target: {fileID: 6057082470800188646, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6199918332323452071, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 1500
-      objectReference: {fileID: 0}
-    - target: {fileID: 6199918332323452071, guid: 218b9f94a0bef134d96985ce58adc3db,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 30
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1351468895530099445, guid: 218b9f94a0bef134d96985ce58adc3db, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218b9f94a0bef134d96985ce58adc3db, type: 3}
---- !u!224 &8663824703748638009 stripped
+--- !u!224 &4432128719178856256 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5996128015830864837, guid: 218b9f94a0bef134d96985ce58adc3db,
+  m_CorrespondingSourceObject: {fileID: 1623694542494147004, guid: 218b9f94a0bef134d96985ce58adc3db,
     type: 3}
   m_PrefabInstance: {fileID: 3101449636434204412}
   m_PrefabAsset: {fileID: 0}

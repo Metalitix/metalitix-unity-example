@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: -1889405158, guid: 0ef0958752c27354d9c55a62f8292294, type: 3}
   m_Name: EditorSettings
   m_EditorClassIdentifier: 
+  dashboardBackgroundColor: {r: 0.050980393, g: 0.06666667, b: 0.09019608, a: 1}
+  surveyPreviewBackgroundColor: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}
+  graphicsFormatForScenePreview: 4
   hasReimported: 1

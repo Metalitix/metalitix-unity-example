@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SurveySettings
   m_EditorClassIdentifier: 
   rangeOfTime: {x: 0.5, y: 5}
-  currentColorTheme: {fileID: 0}
+  currentColorTheme: {fileID: 11400000, guid: 86dc4df442d15c345846cd99a70e7aae, type: 2}
   surveyPopUp: {fileID: 0}
   wasInvoked: 0
