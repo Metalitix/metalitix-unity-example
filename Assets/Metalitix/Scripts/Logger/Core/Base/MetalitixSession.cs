@@ -41,6 +41,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         
         public string SessionUuid { get; private set; }
         
+        [Obsolete]
         public MetalitixEventHandler MetalitixEventHandler { get; private set; }
 
         public event Action OnUserBecameAfk;
@@ -91,7 +92,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
                 MetalitixDebug.LogError(this, e.Message);
             }
 
-            MetalitixEventHandler = new MetalitixEventHandler(LogEvent);
+            MetalitixEventHandler = new MetalitixEventHandler(LogUserEvent);
             
             _sessionTimer.LaunchTimer();
             CollectRecords();
@@ -281,7 +282,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// Log an event from user
         /// </summary>
         /// <param name="metalitixUserEvent"></param>
-        private void LogEvent(MetalitixUserEvent metalitixUserEvent)
+        public void LogUserEvent(MetalitixUserEvent metalitixUserEvent)
         {
             if (!IsRunning) return;
             

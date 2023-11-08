@@ -13,6 +13,7 @@ using Metalitix.Core.Data.Containers;
 using Metalitix.Core.Data.Kinesis;
 using Metalitix.Core.Tools;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Metalitix.Scripts.Logger.Core.Base
 {
@@ -82,6 +83,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             {
                 // There is a problem with Apple Mac apostrophe (correct apostrophe`s is `'´, incorrect apostrophe is ’)
                 var jsonData = JsonHelper.ToJson(data, NullValueHandling.Ignore);
+                Debug.Log(jsonData);
                 var bytes = Encoding.UTF8.GetBytes(jsonData);
                 using var memoryStream = new MemoryStream(bytes);
                 var request = new PutRecordRequest

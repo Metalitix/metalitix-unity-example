@@ -65,16 +65,16 @@ namespace Metalitix.Examples.Scripts
             metalitixLogger.UpdateSession();
         }
         
-        [ContextMenu("Set custom field")]
+        [ContextMenu("Set Attribute")]
         private void AddCustomField()
         {
-            metalitixLogger.SetCustomField("custom", 10000);
+            metalitixLogger.SetAttribute("custom", 10000);
         }
 
-        [ContextMenu("Remove custom field")]
+        [ContextMenu("Remove Attribute")]
         private void RemoveCustomField()
         {
-            metalitixLogger.RemoveCustomField("custom");
+            metalitixLogger.RemoveAttribute("custom");
         }
 
         [ContextMenu("Set pollInterval")]
@@ -94,36 +94,14 @@ namespace Metalitix.Examples.Scripts
         /// </summary>
         private void Update()
         {
-            if (metalitixLogger.IsRunning)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                //Sending a Metalitix KnowType event with `MetalitixInteractionType`
-                if (Input.GetMouseButtonDown(0))
-                {
-                    metalitixLogger.EventHandler.LogMouseDownEvent(Input.mousePosition.x, Input.mousePosition.y);
-                }
+                metalitixLogger.LogEvent("example", "example");
+            }
             
-                //Sending a Metalitix KnowType event with `MetalitixInteractionType` and custom fields
-                if (Input.GetMouseButtonDown(1))
-                {
-                    metalitixLogger.EventHandler.LogMouseDownEvent(Input.mousePosition.x, Input.mousePosition.y, ("customEventField", "customValue"));
-                }
-
-                //Sending a user custom event
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    metalitixLogger.EventHandler.LogCustomEvent("SpaceDown", ("customEventBool", true), ("ButtonDown", "space.click"));
-                }
-            
-                //Sending a user custom event
-                if (Input.GetKeyDown(KeyCode.Break))
-                {
-                    metalitixLogger.EventHandler.LogCustomEvent("BreakDown", ("BreakDown", "break.click"));
-                }
-                
-                if (Input.GetKeyDown(KeyCode.Return))
-                {
-                    metalitixLogger.EventHandler.LogCustomEvent("ReturnDown", ("BoolTest", true));
-                }
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                metalitixLogger.LogState("example", 1);
             }
         }
     }
