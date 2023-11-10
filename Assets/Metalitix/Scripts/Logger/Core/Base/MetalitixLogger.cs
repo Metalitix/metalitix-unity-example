@@ -272,7 +272,12 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         #region EventFunctions
 
-        public void LogEvent(string eventName, string groupName)
+        /// <summary>
+        /// Sends the event 
+        /// </summary>
+        /// <param name="groupName">key</param>
+        /// <param name="eventName">value</param>
+        public void LogEvent(string groupName, string eventName)
         {
             var eventType = MetalitixUserEventType.custom;
             var @event = new MetalitixUserEvent(eventName, eventType);
