@@ -194,7 +194,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             
             LogScreenPredefinedEvent(eventName, eventType, target, @params);
         }
-
+    
         public void LogZoomStartEvent(float zoomValue, params (string key, JToken value)[] @params)
         {
             var eventType = MetalitixUserEventType.ZoomStart;

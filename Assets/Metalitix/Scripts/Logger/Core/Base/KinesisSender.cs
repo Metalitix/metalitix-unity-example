@@ -13,6 +13,7 @@ using Metalitix.Core.Data.Containers;
 using Metalitix.Core.Data.Kinesis;
 using Metalitix.Core.Tools;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Metalitix.Scripts.Logger.Core.Base
 {

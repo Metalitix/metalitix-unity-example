@@ -43,6 +43,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <summary>
         /// Get event handler class with different methods for events sending
         /// </summary>
+        [Obsolete("Instead, use methods directly from the logger, such as `LogEvent`, `LogState`")]
         public MetalitixEventHandler EventHandler
         {
             get 
@@ -269,12 +270,102 @@ namespace Metalitix.Scripts.Logger.Core.Base
             }
         }
 
+        #region EventFunctions
+
+        /// <summary>
+        /// Sends the event 
+        /// </summary>
+        /// <param name="groupName">key</param>
+        /// <param name="eventName">value</param>
+        public void LogEvent(string groupName, string eventName)
+        {
+            var eventType = MetalitixUserEventType.custom;
+            var @event = new MetalitixUserEvent(eventName, eventType);
+            @event.SetGroupName(groupName);
+            _metalitixSession?.LogUserEvent(@event);
+        }
+        
+        public void LogState(string eventName, int value)
+        {
+            var eventType = MetalitixUserEventType.SessionState;
+            var @event = new MetalitixUserEvent(eventName, eventType);
+            @event.AddField(eventName, value);
+            _metalitixSession?.LogUserEvent(@event);
+        }
+        
+        public void LogState(string eventName, float value)
+        {
+            var eventType = MetalitixUserEventType.SessionState;
+            var @event = new MetalitixUserEvent(eventName, eventType);
+            @event.AddField(eventName, value);
+            _metalitixSession?.LogUserEvent(@event);
+        }
+        
+        public void LogState(string eventName, double value)
+        {
+            var eventType = MetalitixUserEventType.SessionState;
+            var @event = new MetalitixUserEvent(eventName, eventType);
+            @event.AddField(eventName, value);
+            _metalitixSession?.LogUserEvent(@event);
+        }
+        
+        public void LogState(string eventName, bool value)
+        {
+            var eventType = MetalitixUserEventType.SessionState;
+            var @event = new MetalitixUserEvent(eventName, eventType);
+            @event.AddField(eventName, value);
+            _metalitixSession?.LogUserEvent(@event);
+        }
+        
+        public void LogState(string eventName, string value)
+        {
+            var eventType = MetalitixUserEventType.SessionState;
+            var @event = new MetalitixUserEvent(eventName, eventType);
+            @event.AddField(eventName, value);
+            _metalitixSession?.LogUserEvent(@event);
+        }
+        
+        #endregion
+
+        #region SettAttributeFunctions
+        
+        public void SetAttribute(string fieldName, int value)
+        {
+            SetCustomField(fieldName, value);
+        }
+        
+        public void SetAttribute(string fieldName, float value)
+        {
+            SetCustomField(fieldName, value);
+        }
+        
+        public void SetAttribute(string fieldName, double value)
+        {
+            SetCustomField(fieldName, value);
+        }
+        
+        public void SetAttribute(string fieldName, bool value)
+        {
+            SetCustomField(fieldName, value);
+        }
+        
+        public void SetAttribute(string fieldName, string value)
+        {
+            SetCustomField(fieldName, value);
+        }
+
+        public void RemoveAttribute(string fieldName)
+        {
+            RemoveCustomField(fieldName);
+        }
+
         /// <summary>
         /// Set new custom field to MetalitixTrackingData
         /// </summary>
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <typeparam name="T"></typeparam>
+        [Obsolete("Use the `SetAttribute` methods instead")]
         public void SetCustomField(string fieldName, int value) 
         {
             _fields?.AddField(fieldName, value);
@@ -287,6 +378,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <typeparam name="T"></typeparam>
+        [Obsolete("Use the `SetAttribute` methods instead")]
         public void SetCustomField(string fieldName, bool value) 
         {
             _fields?.AddField(fieldName, value);
@@ -299,6 +391,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <typeparam name="T"></typeparam>
+        [Obsolete("Use the `SetAttribute` methods instead")]
         public void SetCustomField(string fieldName, float value) 
         {
             _fields?.AddField(fieldName, value);
@@ -311,6 +404,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <typeparam name="T"></typeparam>
+        [Obsolete("Use the `SetAttribute` methods instead")]
         public void SetCustomField(string fieldName, double value) 
         {
             _fields?.AddField(fieldName, value);
@@ -322,6 +416,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// </summary>
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
+        [Obsolete("Use the `SetAttribute` methods instead")]
         public void SetCustomField(string fieldName, string value)
         {
             _fields?.AddField(fieldName, value);
@@ -332,11 +427,14 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// Remove custom field from MetalitixTrackingData
         /// </summary>
         /// <param name="fieldName"></param>
+        [Obsolete("Use the `RemoveAttribute` method instead")]
         public void RemoveCustomField(string fieldName)
         {
             _fields.RemoveField(fieldName);
             _recordsCreator?.SetFields(_fields);
         }
+        
+        #endregion
 
         /// <summary>
         /// Set poll interval to object tracker settings
