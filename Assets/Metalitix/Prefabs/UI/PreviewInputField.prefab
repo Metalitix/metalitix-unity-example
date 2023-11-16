@@ -65,7 +65,7 @@ GameObject:
   - component: {fileID: 7857822083865559261}
   - component: {fileID: 974191436234511042}
   - component: {fileID: 3884047487984400633}
-  - component: {fileID: 3793153302718784057}
+  - component: {fileID: 4273610809776012453}
   m_Layer: 8
   m_Name: PreviewInputField
   m_TagString: Untagged
@@ -213,7 +213,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_ShouldActivateOnSelect: 1
---- !u!114 &3793153302718784057
+--- !u!114 &4273610809776012453
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3174306024376049830}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 482562190, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: b8b5e0e8b59542d44aeb349689c5d38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentCanvasGroups: []

@@ -13,7 +13,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
     {
         private FpsMetric _fpsMetric;
         private MetalitixFields _fields;
-        private TrackingEntity _trackingEntity;
+        private MetalitixCamera _metalitixCamera;
         private Record _currentRecord;
 
         private readonly MetalitixAnimation[] _metalitixAnimations;
@@ -33,9 +33,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
             InitilizeMetrics();
         }
 
-        public void SetTrackingEntity(TrackingEntity trackingEntity)
+        public void SetTrackingEntity(MetalitixCamera metalitixCamera)
         {
-            _trackingEntity = trackingEntity;
+            _metalitixCamera = metalitixCamera;
         }
         
         public void SetFields(MetalitixFields fields)
@@ -50,9 +50,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <returns></returns>
         public Record GetRecord(string type, string sessionUuid)
         {
-            if (_trackingEntity == null) return null;
+            if (_metalitixCamera == null) return null;
             
-            var data = new MetalitixTrackingData(_trackingEntity.Position, _trackingEntity.Direction);
+            var data = new MetalitixTrackingData(_metalitixCamera.Position, _metalitixCamera.Direction);
             data.SetFields(_fields.GetFields());
             
             var record = new Record(type, sessionUuid, CurrentTimeStamp(), data);
@@ -74,9 +74,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
         {
             while (true)
             {
-                if (_trackingEntity != null)
+                if (_metalitixCamera != null)
                 {
-                    var data = new MetalitixTrackingData(_trackingEntity.Position, _trackingEntity.Direction);
+                    var data = new MetalitixTrackingData(_metalitixCamera.Position, _metalitixCamera.Direction);
                 
                     if (!_currentRecord.data.Equals(data))
                     {
@@ -116,11 +116,17 @@ namespace Metalitix.Scripts.Logger.Core.Base
         {
             if (_metalitixAnimations != null && _metalitixAnimations.Length > 0)
             {
-                AnimationData[] animations = _metalitixAnimations
-                    .SelectMany(metalitixAnimation => metalitixAnimation.ActiveAnimations)
-                    .ToArray();
+                List<AnimationData> animationDatas = new List<AnimationData>();
+                
+                foreach (var animation in _metalitixAnimations)
+                {
+                    foreach (var data in animation.GetAnimationData())
+                    {
+                        animationDatas.Add(data);
+                    }
+                }
 
-                return animations;
+                return animationDatas.ToArray();
             }
             
             return null;

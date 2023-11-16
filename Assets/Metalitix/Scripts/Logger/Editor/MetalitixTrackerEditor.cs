@@ -3,14 +3,15 @@ using System.Globalization;
 using Metalitix.Core.Data.Containers;
 using Metalitix.Core.Enums;
 using Metalitix.Core.Settings;
-using Metalitix.Dashboard.Editor;
 using Metalitix.Editor.Configs;
 using Metalitix.Editor.Data;
+using Metalitix.Editor.Preview;
 using Metalitix.Editor.Settings;
 using Metalitix.Editor.Tools;
-using Metalitix.Preview.Base;
+using Metalitix.Scripts.Dashboard.Editor;
 using Metalitix.Scripts.Logger.Core.Base;
 using Metalitix.Scripts.Logger.Survey.UserInterface.PopUp;
+using Metalitix.Scripts.Preview.Editor;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -40,8 +41,9 @@ namespace Metalitix.Scripts.Logger.Editor
         private UnityEditor.Editor _globalSettingsEditor;
 
         private AuthorizationWindow _authorizationWindow;
-        private TrackingEntity _trackingEntity;
+        private MetalitixCamera _metalitixCamera;
         private SurveyPopUp _currentPreviewPopUp;
+        private SurveyPopUp _currentPopUp;
         private ScenePreviewRenderer _previewRenderer;
         
         private Vector2 _scrollPos;
@@ -101,16 +103,32 @@ namespace Metalitix.Scripts.Logger.Editor
                 typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvasComponent =  canvas.GetComponent<Canvas>();
 
-            _previewRenderer.InstantiatePrefab(_surveySettings.SurveyPopUp);
+            var survey = FindObjectOfType<SurveyPopUp>();
+
+            if (survey != null)
+            {
+                _currentPopUp = survey;
+                _previewRenderer.MoveToTheSceneWithInstance(_currentPopUp.gameObject);
+            }
+            else
+            {
+                _previewRenderer.InstantiatePrefab(_surveySettings.SurveyPopUp);
+            }
+            
             canvasComponent.renderMode = RenderMode.ScreenSpaceCamera;
             canvasComponent.worldCamera = _previewRenderer.RenderCamera;
         
+            ActivateSurveyInThePreviewScene(canvas);
+        }
+
+        private void ActivateSurveyInThePreviewScene(GameObject canvas)
+        {
             var objects = _previewRenderer.Scene.GetRootGameObjects();
 
             foreach (var gameObject in objects)
             {
                 if (!gameObject.TryGetComponent<SurveyPopUp>(out var popUp)) continue;
-                
+
                 _currentPreviewPopUp = popUp;
                 var popUpTransform = _currentPreviewPopUp.transform;
                 popUpTransform.SetParent(canvas.transform);
@@ -298,6 +316,8 @@ namespace Metalitix.Scripts.Logger.Editor
             
             PrefabUtility.InstantiatePrefab(_surveySettings.SurveyPopUp, canvasInstance.transform);
             EditorUtility.DisplayDialog("Success", MetalitixEditorLogs.SurveyPopUpInitialized, "Ok");
+            _currentPopUp = FindObjectOfType<SurveyPopUp>();
+            _currentPopUp.SwitchTheme(_surveySettings.CurrentTheme);
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
 
@@ -326,6 +346,9 @@ namespace Metalitix.Scripts.Logger.Editor
                         throw new ArgumentOutOfRangeException();
                 }
             }
+            
+            if(_currentPopUp != null)
+                _currentPopUp.SwitchTheme(_surveySettings.CurrentTheme);
         }
 
         private void DrawPreviewScene()

@@ -272,7 +272,7 @@ GameObject:
   - component: {fileID: 6057082470749256022}
   - component: {fileID: 6057082470749256021}
   - component: {fileID: 6199918332323452071}
-  - component: {fileID: 5836522723099103412}
+  - component: {fileID: 5279180807626558827}
   m_Layer: 8
   m_Name: PreviewSliderWithContainer
   m_TagString: Untagged
@@ -368,7 +368,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1500, y: 22, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5836522723099103412
+--- !u!114 &5279180807626558827
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -377,15 +377,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 6057082470749256023}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1988627360, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e7ffaee9ceac4f40832cacc593c3d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentCanvasGroups: []
   slider: {fileID: 6057082470749256021}
   canvasScaler: {fileID: 0}
   container: {fileID: 5996128015830864837}
-  leftX: 10
-  rightX: 1490
+  leftX: 0
+  rightX: 0
 --- !u!1 &6057082470800188647
 GameObject:
   m_ObjectHideFlags: 0

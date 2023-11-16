@@ -115,8 +115,8 @@ Material:
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpotBrightness: 4
-    - _SpotScale: 0.16
+    - _SpotBrightness: 0.283
+    - _SpotScale: 0.24200001
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1

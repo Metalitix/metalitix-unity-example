@@ -7,6 +7,8 @@ using Metalitix.Core.Data.Runtime;
 using Metalitix.Core.Enums;
 using Metalitix.Core.Settings;
 using Metalitix.Core.Tools;
+using Metalitix.Core.Tools.RequestTools;
+using Metalitix.Scripts.Logger.Core.Base.Senders;
 using Metalitix.Scripts.Logger.Core.Tools;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -16,14 +18,15 @@ namespace Metalitix.Scripts.Logger.Core.Base
     internal class MetalitixSession
     {
         private Batch _currentBatch;
-        private RecordsSender _sender;
+        private DataSender<Record> _sender;
         private SessionTimer _sessionTimer;
-        
+
         private CancellationTokenSource _cancellationTokenSource;
 
         private readonly LoggerSettings _loggerSettings;
         private readonly GlobalSettings _globalSettings;
         private readonly RecordsCreator _recordsCreator;
+        private readonly WebRequestHelper _webRequestHelper;
 
         private const int AttemptsToReconnect = 20;
         private const float TimeToRestart = 1f;
@@ -46,11 +49,12 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         public event Action OnUserBecameAfk;
         
-        public MetalitixSession(LoggerSettings loggerSettings, GlobalSettings globalSettings, RecordsCreator recordsCreator)   
+        public MetalitixSession(LoggerSettings loggerSettings, GlobalSettings globalSettings, RecordsCreator recordsCreator, WebRequestHelper webRequestHelper)   
         {
             _loggerSettings = loggerSettings;
             _globalSettings = globalSettings;
             _recordsCreator = recordsCreator;
+            _webRequestHelper = webRequestHelper;
         }
         
         public void UpdatePollInterval(float pollInterval)
@@ -62,18 +66,18 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <summary>
         /// Create start record and start writing data to the server
         /// </summary>
-        public async void StartSession(Action OnError)
+        public async void StartSession(Action onError)
         {
             if (CheckIsRunning()) return;
             
-            _sender = new KinesisSender(_globalSettings.TempApiKey, _globalSettings.ServerUrl);
+            _sender = new KinesisSender(_globalSettings, _webRequestHelper);
             try
             {
                 SessionUuid = await _sender.InitializeSession();
             }
             catch (Exception e) 
             {
-                OnError?.Invoke();
+                onError?.Invoke();
                 return;
             }
             
@@ -88,12 +92,10 @@ namespace Metalitix.Scripts.Logger.Core.Base
             }
             catch (Exception e)
             {
-                OnError?.Invoke();
+                onError?.Invoke();
                 MetalitixDebug.LogError(this, e.Message);
             }
 
-            MetalitixEventHandler = new MetalitixEventHandler(LogUserEvent);
-            
             _sessionTimer.LaunchTimer();
             CollectRecords();
             MetalitixDebug.Log(this, MetalitixRuntimeLogs.SessionHasStarted);
@@ -175,7 +177,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             url.Append(MetalitixConfig.SurveyEndPoint);
 
             string jsonData = JsonHelper.ToJson(data, NullValueHandling.Ignore);
-            await WebRequestHelper.PostDataWithPlayLoad(url.ToString(), jsonData, new CancellationToken());
+            await _webRequestHelper.PostDataWithPlayLoad(url.ToString(), jsonData, new CancellationToken());
         }
 
         private void InitializeTimer()
@@ -282,7 +284,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// Log an event from user
         /// </summary>
         /// <param name="metalitixUserEvent"></param>
-        public void LogUserEvent(MetalitixUserEvent metalitixUserEvent)
+        public void LogUserEvent(string type, MetalitixUserEvent metalitixUserEvent)
         {
             if (!IsRunning) return;
             
@@ -290,7 +292,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             record.SetUserEvent(metalitixUserEvent);
             ManualSend(record);
             
-            MetalitixDebug.Log(this,MetalitixRuntimeLogs.EventWasLogged + metalitixUserEvent.eventName);
+            MetalitixDebug.Log(this,$"{type} was logged: {metalitixUserEvent.eventName}");
         }
         
         private bool CheckIsRunning()

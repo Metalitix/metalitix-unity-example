@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: -1311046699, guid: 0ef0958752c27354d9c55a62f8292294, type: 3}
   m_Name: HeatMapSettings
   m_EditorClassIdentifier: 
-  gazeIntensity: 200
-  gazeScale: 200
-  positionIntensity: 200
-  positionScale: 200
+  gazeIntensity: 28.3
+  gazeScale: 24.2
+  positionIntensity: 20.1
+  positionScale: 9.8
   cameraSize: 1
-  heatMapMaterial: {fileID: 0}
-  bodyMaterial: {fileID: 0}
-  headMaterial: {fileID: 0}
+  heatMapMaterial: {fileID: 2100000, guid: 0467864e53081314097abf1a18112cc5, type: 2}
+  bodyMaterial: {fileID: 2100000, guid: 546f6b836cd1b054e9e858b525087c28, type: 2}
+  headMaterial: {fileID: 2100000, guid: aceb579d8f6e6824aaf78c600cf07161, type: 2}

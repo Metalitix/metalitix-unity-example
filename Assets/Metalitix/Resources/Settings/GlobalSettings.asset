@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: -1846510234, guid: 430385ed72fd94c40bef2963b4208506, type: 3}
   m_Name: GlobalSettings
   m_EditorClassIdentifier: 
-  useDebugMode: 0
-  useSurvey: 0
+  useDebugMode: 1
+  useSurvey: 1
   inactivityInterval: 2
-  apiKey: 
-  serverUrl: https://app.metalitix.com/api/v1
+  apiKey: 4a8e5cac-594f-438d-aa48-3281baaf074b
+  serverUrl: https://metalitix-dev.aircards.io/api/v1
