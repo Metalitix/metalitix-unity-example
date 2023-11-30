@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Metalitix.Core.Data.Runtime;
 using Metalitix.Core.Tools;
@@ -13,29 +12,31 @@ namespace Metalitix.Scripts.Logger.Core.Base
     {
         private FpsMetric _fpsMetric;
         private MetalitixFields _fields;
-        private TrackingEntity _trackingEntity;
+        private MetalitixCamera _metalitixCamera;
         private Record _currentRecord;
 
-        private readonly MetalitixAnimation[] _metalitixAnimations;
+        private readonly MetalitixScene _metalitixScene;
         private readonly MetalitixUserMetaData _userMetaData;
         private readonly MetalitixCameraData _cameraData;
         private readonly List<Metric> _metrics = new List<Metric>();
 
+        public Record CurrentRecord => _currentRecord;
+
         public event Action OnDataChanged;
         
-        public RecordsCreator(MetalitixAnimation[] metalitixAnimations, MetalitixUserMetaData metaData, 
+        public RecordsCreator(MetalitixScene metalitixScene, MetalitixUserMetaData metaData, 
             MetalitixCameraData cameraData)
         {
             _userMetaData = metaData;
             _cameraData = cameraData;
-            _metalitixAnimations= metalitixAnimations;
+            _metalitixScene= metalitixScene;
             
             InitilizeMetrics();
         }
 
-        public void SetTrackingEntity(TrackingEntity trackingEntity)
+        public void SetTrackingEntity(MetalitixCamera metalitixCamera)
         {
-            _trackingEntity = trackingEntity;
+            _metalitixCamera = metalitixCamera;
         }
         
         public void SetFields(MetalitixFields fields)
@@ -50,9 +51,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <returns></returns>
         public Record GetRecord(string type, string sessionUuid)
         {
-            if (_trackingEntity == null) return null;
+            if (_metalitixCamera == null) return null;
             
-            var data = new MetalitixTrackingData(_trackingEntity.Position, _trackingEntity.Direction);
+            var data = new MetalitixTrackingData(_metalitixCamera.Position, _metalitixCamera.Direction);
             data.SetFields(_fields.GetFields());
             
             var record = new Record(type, sessionUuid, CurrentTimeStamp(), data);
@@ -74,9 +75,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
         {
             while (true)
             {
-                if (_trackingEntity != null)
+                if (_metalitixCamera != null)
                 {
-                    var data = new MetalitixTrackingData(_trackingEntity.Position, _trackingEntity.Direction);
+                    var data = new MetalitixTrackingData(_metalitixCamera.Position, _metalitixCamera.Direction);
                 
                     if (!_currentRecord.data.Equals(data))
                     {
@@ -114,16 +115,9 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         private AnimationData[] FetchAnimations()
         {
-            if (_metalitixAnimations != null && _metalitixAnimations.Length > 0)
-            {
-                AnimationData[] animations = _metalitixAnimations
-                    .SelectMany(metalitixAnimation => metalitixAnimation.ActiveAnimations)
-                    .ToArray();
+            if (_metalitixScene == null) return null;
 
-                return animations;
-            }
-            
-            return null;
+            return _metalitixScene.GetAnimationData();
         }
 
         private MetricsData GetMetricData()

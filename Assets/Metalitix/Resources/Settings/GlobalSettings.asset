@@ -16,4 +16,4 @@ MonoBehaviour:
   useSurvey: 0
   inactivityInterval: 2
   apiKey: 
-  serverUrl: https://app.metalitix.com/api/v1
+  serverUrl: https://app.metalitix.com

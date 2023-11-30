@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Globalization;
+using System.Reflection;
 using Metalitix.Core.Data.Containers;
 using Metalitix.Core.Enums;
 using Metalitix.Core.Settings;
-using Metalitix.Dashboard.Editor;
 using Metalitix.Editor.Configs;
 using Metalitix.Editor.Data;
+using Metalitix.Editor.Preview;
 using Metalitix.Editor.Settings;
 using Metalitix.Editor.Tools;
-using Metalitix.Preview.Base;
+using Metalitix.Scripts.Dashboard.Editor;
 using Metalitix.Scripts.Logger.Core.Base;
 using Metalitix.Scripts.Logger.Survey.UserInterface.PopUp;
+using Metalitix.Scripts.Preview.Editor;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -40,8 +42,9 @@ namespace Metalitix.Scripts.Logger.Editor
         private UnityEditor.Editor _globalSettingsEditor;
 
         private AuthorizationWindow _authorizationWindow;
-        private TrackingEntity _trackingEntity;
+        private MetalitixCamera _metalitixCamera;
         private SurveyPopUp _currentPreviewPopUp;
+        private SurveyPopUp _currentPopUp;
         private ScenePreviewRenderer _previewRenderer;
         
         private Vector2 _scrollPos;
@@ -79,43 +82,69 @@ namespace Metalitix.Scripts.Logger.Editor
             _loggerSettings = MetalitixStartUpHandler.LoggerSettings;
             _surveySettings = MetalitixStartUpHandler.SurveySettings;
             _dashboardSettings = MetalitixStartUpHandler.DashboardSettings;
-            _mainTheme = MetalitixStartUpHandler.MainTheme;
-            _inverseTheme = MetalitixStartUpHandler.InverseTheme;
             _buildData = MetalitixStartUpHandler.BuildData;
-            
+
+            if (_surveySettings.SurveyLogo == null)
+            {
+                _surveySettings.SurveyLogo = MetalitixStartUpHandler.SurveyLogo;
+            }
+
             _globalSettingsEditor = MetalitixEditorTools.CreateEditor(_globalSettings);
             _surveySettingsEditor = MetalitixEditorTools.CreateEditor(_surveySettings);
             _loggerSettingsEditor = MetalitixEditorTools.CreateEditor(_loggerSettings);
-            
-            if (_surveySettings.CurrentTheme == null)
+        }
+
+        private void SetDefaultSurvey()
+        {
+            if (_surveySettings.SurveyPopUp == null)
             {
-                _surveySettings.CurrentTheme = _mainTheme;
+                _surveySettings.SurveyPopUp = Resources.Load<SurveyPopUp>("Objects/WhitePopUpSimpleCanvas");
             }
         }
 
         private void InitializePreviewScene()
         {
             var editorSettings = MetalitixStartUpHandler.EditorSettings;
-            _previewRenderer = new ScenePreviewRenderer(100, editorSettings.SurveyPreviewBackgroundColor, editorSettings.GraphicsFormatForScenePreview, position.width, position.height);
+            _previewRenderer = new ScenePreviewRenderer(100, -10, editorSettings.SurveyPreviewBackgroundColor, editorSettings.GraphicsFormatForScenePreview, position.width, position.height);
+            
             var canvas = _previewRenderer.SpawnGameObject("Canvas", 
                 typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            var canvasComponent =  canvas.GetComponent<Canvas>();
+            var canvasComponent = canvas.GetComponent<Canvas>();
 
-            _previewRenderer.InstantiatePrefab(_surveySettings.SurveyPopUp);
+            var survey = FindObjectOfType<SurveyPopUp>();
+
+            if (survey != null)
+            {
+                _currentPopUp = survey;
+                _surveySettings.SurveyPopUp = _currentPopUp;
+                _previewRenderer.MoveToTheSceneWithInstance(_currentPopUp.gameObject);
+            }
+            else
+            {
+                _previewRenderer.InstantiatePrefab(_surveySettings.SurveyPopUp);
+            }
+            
             canvasComponent.renderMode = RenderMode.ScreenSpaceCamera;
             canvasComponent.worldCamera = _previewRenderer.RenderCamera;
-        
+
+            ActivateSurveyInThePreviewScene(canvas);
+            SyncSurvey();
+        }
+
+        private void ActivateSurveyInThePreviewScene(GameObject canvas)
+        {
             var objects = _previewRenderer.Scene.GetRootGameObjects();
 
             foreach (var gameObject in objects)
             {
                 if (!gameObject.TryGetComponent<SurveyPopUp>(out var popUp)) continue;
-                
+
                 _currentPreviewPopUp = popUp;
                 var popUpTransform = _currentPreviewPopUp.transform;
                 popUpTransform.SetParent(canvas.transform);
                 popUpTransform.localPosition = Vector3.zero;
-                _currentPreviewPopUp.SwitchTheme(_surveySettings.CurrentTheme);
+                popUpTransform.localScale = Vector3.one * 5f;
+                
                 _currentPreviewPopUp.SetVisible(true);
             }
         }
@@ -223,14 +252,27 @@ namespace Metalitix.Scripts.Logger.Editor
         {
             if (_globalSettings.UseSurvey)
             {
+                SetDefaultSurvey();
+                var isSurveyNull = _currentPopUp == null;
+
                 EditorGUILayout.LabelField("Engagement Survey", MetalitixEditorTools.GetSubHeaderTextStyle());
                 MetalitixEditorTools.PaintSpaceWithLine();
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                MetalitixEditorTools.DrawInspector(_surveySettingsEditor);
-                EditorGUI.BeginChangeCheck();
-                _surveySettings.SurveyPopUp =
-                    EditorGUILayout.ObjectField("Survey PopUp", _surveySettings.SurveyPopUp, typeof(Object), false);
+
+                if (isSurveyNull)
+                {
+                    EditorGUILayout.HelpBox("Survey not found in the current scene. Please click the InitializeSurvey button",
+                        MessageType.Warning, true);
+                    MetalitixEditorTools.PaintSpaceWithLine();
+                }
                 
+                _surveySettings.SurveyPopUp =
+                    EditorGUILayout.ObjectField("Survey PopUp", _surveySettings.SurveyPopUp, typeof(Object),
+                        false);
+
+                EditorGUI.BeginDisabledGroup(_currentPopUp == null);
+                EditorGUI.BeginChangeCheck();
+                MetalitixEditorTools.DrawInspector(_surveySettingsEditor);
                 EditorUtility.SetDirty(_surveySettings);
 
                 if (EditorGUI.EndChangeCheck())
@@ -246,21 +288,35 @@ namespace Metalitix.Scripts.Logger.Editor
                     }
                 }
 
-                EditorGUILayout.Space(MetalitixEditorTools.SpaceValueBeforeButtons);
-                MetalitixEditorTools.PaintButton("Switch Theme", SwitchTheme);
+                EditorGUI.EndDisabledGroup();
                 EditorGUILayout.Space(MetalitixEditorTools.SpaceValueBetweenButtons);
-                MetalitixEditorTools.PaintButton("Initialize PopUp", InitializePopUp);
+                MetalitixEditorTools.PaintButton("Initialize Survey", InitializePopUp);
                 EditorGUILayout.Space(MetalitixEditorTools.SpaceValueBetweenButtons);
                 EditorGUILayout.EndVertical();
                 MetalitixEditorTools.PaintSpaceWithLine();
-                
-                if(_surveySettings.SurveyPopUp == null) return;
-                
-                EditorGUILayout.LabelField("Preview", MetalitixEditorTools.GetSubHeaderTextStyle());
-                DrawPreviewScene();
+
+                if (!isSurveyNull)
+                {
+                    SyncSurvey();
+                    EditorGUILayout.LabelField("Preview", MetalitixEditorTools.GetSubHeaderTextStyle());
+                    DrawPreviewScene();
+                }
             }
             
             EditorGUILayout.EndFoldoutHeaderGroup();
+        }
+
+        private void SyncSurvey()
+        {
+            if(_currentPreviewPopUp != null)
+            {
+                _currentPreviewPopUp.SyncWithSettings();
+            }
+            
+            if(_currentPopUp == null) return;
+            
+            EditorUtility.SetDirty(_currentPopUp);
+            _currentPopUp.SyncWithSettings();
         }
 
         private void InitializePopUp()
@@ -298,6 +354,7 @@ namespace Metalitix.Scripts.Logger.Editor
             
             PrefabUtility.InstantiatePrefab(_surveySettings.SurveyPopUp, canvasInstance.transform);
             EditorUtility.DisplayDialog("Success", MetalitixEditorLogs.SurveyPopUpInitialized, "Ok");
+            _currentPopUp = FindObjectOfType<SurveyPopUp>();
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
 
@@ -306,26 +363,6 @@ namespace Metalitix.Scripts.Logger.Editor
             _authorizationWindow = CreateInstance<AuthorizationWindow>();
             _authorizationWindow.Initialize(new Vector2(position.x + position.width / 2, position.y + position.height / 2));
             _authorizationWindow.Show();
-        }
-
-        private void SwitchTheme()
-        {
-            if (_currentPreviewPopUp != null)
-            {
-                switch (_surveySettings.CurrentTheme.ThemeType)
-                {
-                    case MetalitixThemeType.Light:
-                        _currentPreviewPopUp.SwitchTheme(_inverseTheme);
-                        _surveySettings.CurrentTheme = _inverseTheme;
-                        break;
-                    case MetalitixThemeType.Dark:
-                        _currentPreviewPopUp.SwitchTheme(_mainTheme);
-                        _surveySettings.CurrentTheme = _mainTheme;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
         }
 
         private void DrawPreviewScene()
@@ -356,7 +393,7 @@ namespace Metalitix.Scripts.Logger.Editor
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
         }
-        
+
         private void PaintLogo()
         {
             EditorGUILayout.Space(MetalitixEditorTools.SpaceValueForLogo);

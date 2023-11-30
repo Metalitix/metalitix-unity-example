@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8767368052745167889}
   - component: {fileID: 3336874738129792368}
   - component: {fileID: 1746455376918323833}
-  - component: {fileID: 4886776494732928710}
+  - component: {fileID: 8372422182492300473}
   m_Layer: 8
   m_Name: PauseArea
   m_TagString: Untagged
@@ -91,7 +91,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4886776494732928710
+--- !u!114 &8372422182492300473
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,6 +100,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3417152338343935206}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1839285001, guid: 518a50d66db5e1548a8bc4e5b137bf99, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c8e3bd15549b6c45ba97eee1666074c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

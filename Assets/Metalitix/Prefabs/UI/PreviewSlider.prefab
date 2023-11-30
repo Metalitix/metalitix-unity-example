@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2969316879510184711}
   - component: {fileID: 2969316879510184708}
   - component: {fileID: 3112195485118877430}
-  - component: {fileID: 4905633625152767760}
+  - component: {fileID: 6237261929445224550}
   m_Layer: 8
   m_Name: PreviewSlider
   m_TagString: Untagged
@@ -106,7 +106,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1000, y: 20, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4905633625152767760
+--- !u!114 &6237261929445224550
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,7 +115,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2969316879510184710}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1141431633, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b46fec4cb06f9e41a81d97bbc68057d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentCanvasGroups: []

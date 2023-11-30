@@ -1,13 +1,17 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Metalitix.Core.Data.Containers;
 using Metalitix.Core.Data.Runtime;
 using Metalitix.Core.Enums;
 using Metalitix.Core.Settings;
 using Metalitix.Core.Tools;
+using Metalitix.Core.Tools.RequestTools;
 using Metalitix.Scripts.Logger.Extensions;
 using Metalitix.Scripts.Logger.Survey.Base;
+using Metalitix.Scripts.Logger.Survey.UserInterface.PopUp;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -17,18 +21,23 @@ namespace Metalitix.Scripts.Logger.Core.Base
     public class MetalitixLogger : MonoBehaviour
     {
         private bool _isInitialized;
+        private CancellationTokenSource _surveyCancellation;
         private SurveyElement<RateType> _currentPopUp;
 
         private InternetAccessChecker _internetAccessChecker;
         private MetalitixFields _fields;
         private RecordsCreator _recordsCreator;
         private MetalitixSession _metalitixSession;
-        private MetalitixAnimation[] _metalitixAnimations;
+        private MetalitixScene _metalitixScene;
+        private RequestHeaders _customRequestHeaders;
+        private WebRequestHelper _webRequestHelper;
+
+        private string _ipv4Pattern = @"^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
         
         protected MetalitixUserMetaData MetaData { get; private set; }
         protected MetalitixCameraData CameraData { get; private set; }
         
-        protected TrackingEntity TrackingEntity { get; private set; }
+        protected MetalitixCamera metalitixCamera { get; private set; }
         protected GlobalSettings GlobalSettings { get; private set; }
         protected SurveySettings SurveySettings { get; private set; }
         protected LoggerSettings LoggerSettings { get; private set; }
@@ -75,22 +84,21 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         private void Start()
         {
-            _metalitixAnimations = FindObjectsOfType<MetalitixAnimation>();
+            _metalitixScene = FindObjectOfType<MetalitixScene>();
         }
 
         private void FindPopUp()
         {
-            _currentPopUp = FindObjectOfType<SurveyElement<RateType>>();
-
-            if (_currentPopUp)
-                _currentPopUp.SwitchTheme(SurveySettings.CurrentTheme);
-            else
-                MetalitixDebug.LogError(this, MetalitixRuntimeLogs.CheckSurveyInTheScene);
+            _currentPopUp = FindObjectOfType<SurveyPopUp>();
+            CheckForSurvey();
         }
 
-        private void OnDisable()
+        private async void OnDestroy()
         {
-            EndSession();
+            if(_metalitixSession == null) return;
+            
+            _surveyCancellation.Cancel();
+            await _metalitixSession.ForceDispose();
         }
 
         /// <summary>
@@ -98,58 +106,58 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// </summary>
         protected void FindEntity()
         {
-            var trackingEntity = FindObjectsOfType<TrackingEntity>();
+            var trackingEntity = FindObjectsOfType<MetalitixCamera>();
 
             if (trackingEntity.Length < 1)
-                MetalitixDebug.LogError(this,MetalitixRuntimeLogs.PleaseAttachTrackingEntity);
+                MetalitixDebug.LogError(this,MetalitixRuntimeLogs.PleaseAttachMetalitixCamera);
             else
             {
-                TrackingEntity = trackingEntity.First();
-                MetalitixDebug.Log(this,MetalitixRuntimeLogs.TrackingEntityFound + TrackingEntity.name);
+                metalitixCamera = trackingEntity.First();
+                MetalitixDebug.Log(this,MetalitixRuntimeLogs.MetalitixCameraFound + metalitixCamera.name);
             }
         }
 
         /// <summary>
         /// SetData logger, set userMeta and Camera data to the logger
         /// </summary>
-        /// <param name="trackingEntity"></param>
-        public virtual async void Initialize(TrackingEntity trackingEntity = null)
+        /// <param name="metalitixCamera"></param>
+        /// <param name="customIp"></param>
+        public virtual async void Initialize(MetalitixCamera metalitixCamera, string customIp = null)
         {
-            _internetAccessChecker = new InternetAccessChecker();
+            _internetAccessChecker = new InternetAccessChecker(GlobalSettings.ServerUrl);
             var isHasAccessToInternet = await _internetAccessChecker.CheckInternetAccess();
-
+            
             if (!isHasAccessToInternet)
             {
                 _isInitialized = false;
                 return;
             } 
             
-            if (trackingEntity != null)
-                SetTrackingEntity(trackingEntity);
-            else
-                FindEntity();
-
+            SetTrackingEntity(metalitixCamera);
+            
+            if(!CheckForMetalitixCamera()) return;
+                
+            _webRequestHelper = new WebRequestHelper();
             MetaData = new MetalitixUserMetaData(SceneManager.GetActiveScene().name);
             MetaData.SetSystemInfo(SystemInfoHelper.CollectSystemInfo());
             CameraData = new MetalitixCameraData(Camera.main);
-
             _fields = new MetalitixFields();
-
             _isInitialized = true;
             MetalitixDebug.Log(this,MetalitixRuntimeLogs.LoggerIsInitialized);
+            HandleCustomIp(customIp);
 
-            if (TrackingEntity.AutomaticallyStartLogging && !IsRunning)
+            if (this.metalitixCamera.AutomaticallyStartLogging && !IsRunning)
             {
                 StartSession();
             }
         }
-        
+
         /// <summary>
         /// Call the start routine
         /// </summary>
         public void StartSession()
         {
-            if(!CheckForTrackingEntity()) return;
+            if(!CheckForMetalitixCamera()) return;
             
             if (String.IsNullOrEmpty(GlobalSettings.APIKey))
             {
@@ -168,6 +176,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
                     }
                 }
 
+                _surveyCancellation = new CancellationTokenSource();
                 CreateSession();
 
 #if !UNITY_EDITOR
@@ -183,10 +192,10 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         private void CreateSession()
         {
-            _recordsCreator = new RecordsCreator(_metalitixAnimations, MetaData, CameraData);
-            _metalitixSession = new MetalitixSession(LoggerSettings, GlobalSettings, _recordsCreator);
+            _recordsCreator = new RecordsCreator(_metalitixScene, MetaData, CameraData);
+            _metalitixSession = new MetalitixSession(LoggerSettings, GlobalSettings, _recordsCreator, _webRequestHelper);
 
-            _recordsCreator.SetTrackingEntity(TrackingEntity);
+            _recordsCreator.SetTrackingEntity(metalitixCamera);
             _recordsCreator.SetFields(_fields);
 
             _metalitixSession.OnUserBecameAfk += HandleBecameAfk;
@@ -209,6 +218,24 @@ namespace Metalitix.Scripts.Logger.Core.Base
             OnAwayFromKeyboard?.Invoke();
             await _recordsCreator.WaitForUserBack();
             StartSession();
+        }
+        
+        private void HandleCustomIp(string customIp)
+        {
+            if(string.IsNullOrEmpty(customIp)) return;
+            
+            Regex ipv4Regex = new Regex(_ipv4Pattern);
+
+            if (!ipv4Regex.IsMatch(customIp))
+            {
+                MetalitixDebug.LogError(this, MetalitixRuntimeLogs.IPHasNotBeenVerified);
+                return;
+            }
+            
+            _customRequestHeaders = new RequestHeaders();
+            _customRequestHeaders.AddHeader(HeaderType.ForwardedFrom, customIp);
+            _webRequestHelper.SetCustomRequestHeaders(_customRequestHeaders);
+            MetalitixDebug.Log(this, MetalitixRuntimeLogs.IPAddressConfigured + customIp);
         }
 
         /// <summary>
@@ -241,17 +268,12 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <summary>
         /// Create End record and stop writing process
         /// </summary>
-        public void EndSession()
+        public async Task EndSession()
         {
             if (_metalitixSession != null)
             {
-                if (!_metalitixSession.IsRunning && !_metalitixSession.IsPaused)
-                {
-                    MetalitixDebug.LogError(this, MetalitixRuntimeLogs.SessionHasNotStartedYet);
-                    return;
-                }
-                
-                _metalitixSession.EndSession();
+                await _metalitixSession.EndSession();
+                _surveyCancellation.Cancel();
                 _metalitixSession.OnUserBecameAfk -= HandleBecameAfk;
                 _metalitixSession = null;
             }
@@ -260,13 +282,14 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <summary>
         /// Set tracking entity
         /// </summary>
-        /// <param name="trackingEntity"></param>
-        public void SetTrackingEntity(TrackingEntity trackingEntity)
+        /// <param name="metalitixCamera"></param>
+        [Obsolete("Users should always specify the camera when they start the session. Changing the camera after starting a session can yield unexpected results. Set MetalitixCamera always using the `Initialize` method")]
+        public void SetTrackingEntity(MetalitixCamera metalitixCamera)
         {
-            if (trackingEntity != null)
+            if (metalitixCamera != null)
             {
-                TrackingEntity = trackingEntity;
-                _recordsCreator?.SetTrackingEntity(TrackingEntity);
+                this.metalitixCamera = metalitixCamera;
+                _recordsCreator?.SetTrackingEntity(this.metalitixCamera);
             }
         }
 
@@ -282,7 +305,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var eventType = MetalitixUserEventType.custom;
             var @event = new MetalitixUserEvent(eventName, eventType);
             @event.SetGroupName(groupName);
-            _metalitixSession?.LogUserEvent(@event);
+            _metalitixSession?.LogUserEvent("Event", @event);
         }
         
         public void LogState(string eventName, int value)
@@ -290,7 +313,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var eventType = MetalitixUserEventType.SessionState;
             var @event = new MetalitixUserEvent(eventName, eventType);
             @event.AddField(eventName, value);
-            _metalitixSession?.LogUserEvent(@event);
+            _metalitixSession?.LogUserEvent("State", @event);
         }
         
         public void LogState(string eventName, float value)
@@ -298,7 +321,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var eventType = MetalitixUserEventType.SessionState;
             var @event = new MetalitixUserEvent(eventName, eventType);
             @event.AddField(eventName, value);
-            _metalitixSession?.LogUserEvent(@event);
+            _metalitixSession?.LogUserEvent("State", @event);
         }
         
         public void LogState(string eventName, double value)
@@ -306,7 +329,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var eventType = MetalitixUserEventType.SessionState;
             var @event = new MetalitixUserEvent(eventName, eventType);
             @event.AddField(eventName, value);
-            _metalitixSession?.LogUserEvent(@event);
+            _metalitixSession?.LogUserEvent("State", @event);
         }
         
         public void LogState(string eventName, bool value)
@@ -314,7 +337,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var eventType = MetalitixUserEventType.SessionState;
             var @event = new MetalitixUserEvent(eventName, eventType);
             @event.AddField(eventName, value);
-            _metalitixSession?.LogUserEvent(@event);
+            _metalitixSession?.LogUserEvent("State", @event);
         }
         
         public void LogState(string eventName, string value)
@@ -322,7 +345,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var eventType = MetalitixUserEventType.SessionState;
             var @event = new MetalitixUserEvent(eventName, eventType);
             @event.AddField(eventName, value);
-            _metalitixSession?.LogUserEvent(@event);
+            _metalitixSession?.LogUserEvent("State", @event);
         }
         
         #endregion
@@ -481,9 +504,10 @@ namespace Metalitix.Scripts.Logger.Core.Base
             var range = SurveySettings.RangeOfTimePopUpShowing;
             var randomValue = Random.Range(range.x, range.y);
             
-            await Task.Delay(TimeSpan.FromSeconds(randomValue * 60));
+            await Task.Delay(TimeSpan.FromSeconds(randomValue * 60), _surveyCancellation.Token);
             
-            ShowSurveyPopUp();
+            if(!_surveyCancellation.IsCancellationRequested)
+                ShowSurveyPopUp();
         }
 
         private bool CheckForInitialized()
@@ -497,11 +521,11 @@ namespace Metalitix.Scripts.Logger.Core.Base
             return true;
         }
 
-        private bool CheckForTrackingEntity()
+        private bool CheckForMetalitixCamera()
         {
-            if (TrackingEntity == null)
+            if (metalitixCamera == null)
             {
-                MetalitixDebug.LogError(this,MetalitixRuntimeLogs.PleaseAttachTrackingEntity);
+                MetalitixDebug.LogError(this,MetalitixRuntimeLogs.PleaseAttachMetalitixCamera);
                 return false;
             }
 

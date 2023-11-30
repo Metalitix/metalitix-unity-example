@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,23 +8,28 @@ using Metalitix.Core.Data.Runtime;
 using Metalitix.Core.Enums;
 using Metalitix.Core.Settings;
 using Metalitix.Core.Tools;
+using Metalitix.Core.Tools.RequestTools;
+using Metalitix.Scripts.Logger.Core.Base.Senders;
 using Metalitix.Scripts.Logger.Core.Tools;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace Metalitix.Scripts.Logger.Core.Base
 {
     internal class MetalitixSession
     {
         private Batch _currentBatch;
-        private RecordsSender _sender;
+        private DataSender<Record> _sender;
         private SessionTimer _sessionTimer;
-        
+        private List<Task> _currentTasks;
+        private bool _forceDisposed;
+        private bool _isSessionStartSent;
+
         private CancellationTokenSource _cancellationTokenSource;
 
         private readonly LoggerSettings _loggerSettings;
         private readonly GlobalSettings _globalSettings;
         private readonly RecordsCreator _recordsCreator;
+        private readonly WebRequestHelper _webRequestHelper;
 
         private const int AttemptsToReconnect = 20;
         private const float TimeToRestart = 1f;
@@ -46,11 +52,13 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         public event Action OnUserBecameAfk;
         
-        public MetalitixSession(LoggerSettings loggerSettings, GlobalSettings globalSettings, RecordsCreator recordsCreator)   
+        public MetalitixSession(LoggerSettings loggerSettings, GlobalSettings globalSettings, RecordsCreator recordsCreator, WebRequestHelper webRequestHelper)   
         {
             _loggerSettings = loggerSettings;
             _globalSettings = globalSettings;
             _recordsCreator = recordsCreator;
+            _webRequestHelper = webRequestHelper;
+            _currentTasks = new List<Task>();
         }
         
         public void UpdatePollInterval(float pollInterval)
@@ -62,18 +70,18 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <summary>
         /// Create start record and start writing data to the server
         /// </summary>
-        public async void StartSession(Action OnError)
+        public async void StartSession(Action onError)
         {
             if (CheckIsRunning()) return;
             
-            _sender = new KinesisSender(_globalSettings.TempApiKey, _globalSettings.ServerUrl);
+            _sender = new KinesisSender(_globalSettings, _webRequestHelper);
             try
             {
                 SessionUuid = await _sender.InitializeSession();
             }
             catch (Exception e) 
             {
-                OnError?.Invoke();
+                onError?.Invoke();
                 return;
             }
             
@@ -84,39 +92,76 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
             try
             {
-                await TryToSend(data);
+                await TryToSendStartSession(data);
+
+                if (_isSessionStartSent)
+                {
+                    MetalitixDebug.Log(this, MetalitixRuntimeLogs.SessionHasStarted);
+                }
             }
             catch (Exception e)
             {
-                OnError?.Invoke();
+                onError?.Invoke();
                 MetalitixDebug.LogError(this, e.Message);
             }
 
-            MetalitixEventHandler = new MetalitixEventHandler(LogUserEvent);
-            
-            _sessionTimer.LaunchTimer();
+            _sessionTimer?.LaunchTimer();
             CollectRecords();
-            MetalitixDebug.Log(this, MetalitixRuntimeLogs.SessionHasStarted);
         }
 
         /// <summary>
         /// Create End record and stop writing process
         /// </summary>
-        public async void EndSession()
+        public async Task EndSession()
         {
-            if(!CheckIsRunning() && !IsPaused) return;
+            if (!CheckIsRunning() && !IsPaused)
+            {
+                MetalitixDebug.LogError(this, MetalitixRuntimeLogs.SessionHasNotStartedYet);
+                return;
+            }
             
             var record = _recordsCreator.GetRecord(MetalitixEventType.SessionEnd, SessionUuid);
-
+            Dispose();
+            await ManualSend(_currentBatch.GetArray());
             await ManualSend(record);
-            StopSession();
-
-            _cancellationTokenSource.Dispose();
-            MetalitixEventHandler = null;
             _sender = null;
-            DeInitializeTimer();
-
             MetalitixDebug.Log(this, MetalitixRuntimeLogs.SessionHasEnded);
+            await Task.Yield();
+        }
+
+        public async Task ForceDispose()
+        {
+            await Task.WhenAll(_currentTasks);
+            Dispose();
+            
+            if(_currentBatch != null && _currentBatch.items.Count != 0)
+                await ManualSend(_currentBatch.GetArray());
+            
+            if (_isSessionStartSent)
+            {
+                var record = _recordsCreator.CurrentRecord.GetRecordWithNewType(MetalitixEventType.SessionEnd, DateTime.Now);
+
+                if (record == null)
+                {
+                    MetalitixDebug.LogWarning(this, MetalitixRuntimeLogs.SessionEndedIncorrectly);
+                }
+                else
+                {
+                    await ManualSend(record);
+                    MetalitixDebug.Log(this, MetalitixRuntimeLogs.SessionHasEnded);
+                }
+            }
+            
+            _sender = null;
+            _forceDisposed = true;
+            await Task.Yield();
+        }
+        
+        private void Dispose()
+        {
+            StopSession();
+            DeInitializeTimer();
+            _cancellationTokenSource?.Dispose();
         }
 
         /// <summary>
@@ -175,7 +220,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             url.Append(MetalitixConfig.SurveyEndPoint);
 
             string jsonData = JsonHelper.ToJson(data, NullValueHandling.Ignore);
-            await WebRequestHelper.PostDataWithPlayLoad(url.ToString(), jsonData, new CancellationToken());
+            await _webRequestHelper.PostDataWithPlayLoad(url.ToString(), jsonData, new CancellationToken());
         }
 
         private void InitializeTimer()
@@ -187,6 +232,8 @@ namespace Metalitix.Scripts.Logger.Core.Base
 
         private void DeInitializeTimer()
         {
+            if(_sessionTimer == null) return;
+            
             _sessionTimer.AfkTimeHasPassed -= AfkTimePassed;
             _sessionTimer.OnSendTimeReached -= OnSendTimeReached;
             _sessionTimer.StopTimer();
@@ -210,8 +257,8 @@ namespace Metalitix.Scripts.Logger.Core.Base
         {
             IsRunning = false;
             IsPaused = true;
-            _sessionTimer.StopTimer();
-            _cancellationTokenSource.Cancel();
+            _sessionTimer?.StopTimer();
+            _cancellationTokenSource?.Cancel();
         }
         
         /// <summary>
@@ -220,15 +267,16 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// <returns></returns>
         private async Task CollectRecords()
         {
+            if(_forceDisposed) return;
+            
             _cancellationTokenSource = new CancellationTokenSource();
             IsRunning = true;
             _currentBatch = new Batch();
             _currentBatch.OnDataPrepared += OnBatchDataPrepared;
             
-            while (!_cancellationTokenSource.Token.IsCancellationRequested)
+            while (!_cancellationTokenSource.Token.IsCancellationRequested && !_forceDisposed)
             {
                 var record = _recordsCreator.GetRecord(MetalitixEventType.UserPosition, SessionUuid);
-                
                 if(record == null) break;
                 
                 _currentBatch.Add(record);
@@ -241,24 +289,41 @@ namespace Metalitix.Scripts.Logger.Core.Base
         private async void OnBatchDataPrepared(Record[] data)
         {
             _currentBatch.OnDataPrepared -= OnBatchDataPrepared;
+            
+            if(_forceDisposed) return;
+            
             _currentBatch = new Batch();
             _currentBatch.OnDataPrepared += OnBatchDataPrepared;
             await Task.Run(() => _sender.SendData(data));
+        }
+        
+        private async Task ManualSend(Record[] data)
+        {
+            var task = Task.Run(() => _sender.SendData(data));
+            _currentTasks.Add(task);
+            await task;
+            _currentTasks.Remove(task);
         }
 
         private async Task ManualSend(Record data)
         {
             var batch = new[] { data };
-            await Task.Run(() => _sender.SendData(batch));
+            var task = Task.Run(() => _sender.SendData(batch));
+            _currentTasks.Add(task);
+            await task;
+            _currentTasks.Remove(task);
         }
         
-        private async Task TryToSend(Record record)
+        private async Task TryToSendStartSession(Record record)
         {
             for (var i = 1; i <= AttemptsToReconnect; i++)
             {
+                if(_forceDisposed) return;
+                
                 try
                 {
                     await ManualSend(record);
+                    _isSessionStartSent = true;    
                     return;
                 }
                 catch (Exception exception)
@@ -282,7 +347,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
         /// Log an event from user
         /// </summary>
         /// <param name="metalitixUserEvent"></param>
-        public void LogUserEvent(MetalitixUserEvent metalitixUserEvent)
+        public void LogUserEvent(string type, MetalitixUserEvent metalitixUserEvent)
         {
             if (!IsRunning) return;
             
@@ -290,7 +355,7 @@ namespace Metalitix.Scripts.Logger.Core.Base
             record.SetUserEvent(metalitixUserEvent);
             ManualSend(record);
             
-            MetalitixDebug.Log(this,MetalitixRuntimeLogs.EventWasLogged + metalitixUserEvent.eventName);
+            MetalitixDebug.Log(this,$"{type} was logged: {metalitixUserEvent.eventName}");
         }
         
         private bool CheckIsRunning()

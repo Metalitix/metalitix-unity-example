@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7274834858830809623}
   - component: {fileID: 238934471385591349}
   - component: {fileID: 3488583361566676416}
-  - component: {fileID: 8653473383856217561}
+  - component: {fileID: 231896814348496918}
   m_Layer: 8
   m_Name: PreviewTextToggle
   m_TagString: Untagged
@@ -102,7 +102,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 145, y: 20, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8653473383856217561
+--- !u!114 &231896814348496918
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 666717424000864966}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2027931954, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: a02323fd40048c64a85301e1fd8fdf95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentCanvasGroups: []

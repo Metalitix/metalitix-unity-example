@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 4252865781726158446}
   - component: {fileID: 971964057135750791}
   - component: {fileID: 2758527872233576957}
-  - component: {fileID: 371123714574654161}
+  - component: {fileID: 2675571243378725101}
   m_Layer: 8
   m_Name: FloatText
   m_TagString: Untagged
@@ -225,7 +225,7 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
---- !u!114 &371123714574654161
+--- !u!114 &2675571243378725101
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -234,7 +234,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2785059207121209228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -187171834, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: 63906aa3efcea2d4caf9b22b5be9c586, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 2758527872233576957}
@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 3936377890073263258}
   - component: {fileID: 3936377890073263257}
   - component: {fileID: 3793524437254918507}
-  - component: {fileID: 1951903309020476058}
+  - component: {fileID: 1154327874500760484}
   m_Layer: 8
   m_Name: PreviewValueSlider
   m_TagString: Untagged
@@ -383,7 +383,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 450, y: 20, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1951903309020476058
+--- !u!114 &1154327874500760484
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -392,13 +392,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3936377890073263259}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2031515134, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: e960b10d6a53bb445b1df7ee071e8c0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentCanvasGroups: []
   slider: {fileID: 3936377890073263257}
   canvasScaler: {fileID: 0}
-  valuesContainer: {fileID: 6503663940527903952}
+  valuesContainer: {fileID: 2820709222751829057}
 --- !u!1 &3936377890155204579
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,7 +487,7 @@ GameObject:
   - component: {fileID: 3936377890175598827}
   - component: {fileID: 3936377890175598836}
   - component: {fileID: 3030290301836708904}
-  - component: {fileID: 5510181505897473233}
+  - component: {fileID: 2861927489933551818}
   m_Layer: 8
   m_Name: Handle
   m_TagString: Untagged
@@ -567,7 +567,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 20, y: 20, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5510181505897473233
+--- !u!114 &2861927489933551818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -576,11 +576,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3936377890175598838}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 956582486, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e2f03595e256c34984c28bd4c258dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatText: {fileID: 371123714574654161}
-  previewSliderBase: {fileID: 1951903309020476058}
+  floatText: {fileID: 2675571243378725101}
+  previewSliderBase: {fileID: 1154327874500760484}
 --- !u!1 &3936377890266938590
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,7 +705,7 @@ GameObject:
   m_Component:
   - component: {fileID: 719475853804553736}
   - component: {fileID: 6433294285743114100}
-  - component: {fileID: 6503663940527903952}
+  - component: {fileID: 2820709222751829057}
   m_Layer: 8
   m_Name: Numbers
   m_TagString: Untagged
@@ -752,7 +752,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4832059981212624679}
   m_CullTransparentMesh: 1
---- !u!114 &6503663940527903952
+--- !u!114 &2820709222751829057
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -761,7 +761,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4832059981212624679}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 504898428, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: ec2eae83321d25546a80a7cd311decdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   values:

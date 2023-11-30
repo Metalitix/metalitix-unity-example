@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 6778710378124259859}
   - component: {fileID: 4008420130080761432}
   - component: {fileID: 3460937889797670127}
-  - component: {fileID: 8658885785096282398}
-  - component: {fileID: 7343934949333464334}
+  - component: {fileID: 5032237763210024827}
+  - component: {fileID: 8272978461743841973}
   m_Layer: 8
   m_Name: EventButton
   m_TagString: Untagged
@@ -137,7 +137,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 40, y: 40, z: 5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8658885785096282398
+--- !u!114 &5032237763210024827
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,12 +146,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4062058457878219092}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1976864649, guid: aa83b753ba21b6a498c90b0f455d2a88, type: 3}
+  m_Script: {fileID: 11500000, guid: 5bf4515df52f3f24e9719b73394ec6e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentCanvasGroups: []
   button: {fileID: 4008420130080761432}
---- !u!114 &7343934949333464334
+--- !u!114 &8272978461743841973
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -160,6 +160,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4062058457878219092}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1100325276, guid: 518a50d66db5e1548a8bc4e5b137bf99, type: 3}
+  m_Script: {fileID: 11500000, guid: e3bb8b951e45d34418a3a74a4735d6d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

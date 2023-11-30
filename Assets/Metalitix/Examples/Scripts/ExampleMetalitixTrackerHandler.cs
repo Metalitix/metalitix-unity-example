@@ -7,6 +7,7 @@ namespace Metalitix.Examples.Scripts
     {
         //Assign metalitix tracker here
         [SerializeField] private MetalitixLogger metalitixLogger;
+        [SerializeField] private MetalitixCamera metalitixCamera;
 
         //Initialization
         private void Start()
@@ -16,8 +17,11 @@ namespace Metalitix.Examples.Scripts
             
             if (Camera.main != null)
             {
-                //The SetData method must be called at least once and before calling StartSession
-                metalitixLogger.Initialize();
+                //Initialization with tracking entity and custom ip (if Tracking entity is null then logger will find entity automatically)
+                metalitixLogger.Initialize(metalitixCamera, "101.46.227.255");
+                
+                // Simple Initialization
+                //metalitixLogger.Initialize(metalitixCamera);
             }
         }
 
@@ -96,7 +100,7 @@ namespace Metalitix.Examples.Scripts
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                metalitixLogger.LogEvent("example", "example");
+                metalitixLogger.LogEvent("example1", "example");
             }
             
             if (Input.GetKeyDown(KeyCode.Tab))
