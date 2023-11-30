@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1889405158, guid: 0ef0958752c27354d9c55a62f8292294, type: 3}
+  m_Name: EditorSettings
+  m_EditorClassIdentifier: 
+  dashboardBackgroundColor: {r: 0.050980393, g: 0.06666667, b: 0.09019608, a: 1}
+  surveyPreviewBackgroundColor: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}
+  graphicsFormatForScenePreview: 4
+  hasReimported: 1

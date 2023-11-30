@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -269950910, guid: 430385ed72fd94c40bef2963b4208506, type: 3}
+  m_Name: SurveySettings
+  m_EditorClassIdentifier: 
+  rangeOfTime: {x: 0.5, y: 5}
+  surveyLogo: {fileID: 2800000, guid: e4afaa1a49851b74ebbd82fae4fe4697, type: 3}
+  surveyBackgroundColor: {r: 0.16078432, g: 0.16078432, b: 0.16078432, a: 1}
+  surveyTextColor: {r: 1, g: 1, b: 1, a: 1}
+  surveyButtonColor: {r: 0.24705882, g: 0.5019608, b: 0.12156863, a: 1}
+  surveyButtonTextColor: {r: 1, g: 1, b: 1, a: 1}
+  surveyPopUp: {fileID: 0}
+  wasInvoked: 0
